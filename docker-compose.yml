@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v2.9.6
+    ports:
+      # Exposes port 80 for incomming web requests
+      - 80:80
+      # The Web UI port http://0.0.0.0:8080 (enabled by --api.insecure=true)
+      - 8080:8080
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jenkins.rule=Host(`$JENKINS_DNS`)"
+      - "traefik.http.routers.jenkins.entrypoints=web"
+      - "traefik.http.routers.jenkins.service=jenkins"
+      - "traefik.http.services.jenkins.loadbalancer.server.port=8080"
+  
+  ssh-agent:
+    image: jenkins/ssh-agent
+
+  sonarqube:
+    image: sonarqube:lts-community
+    restart: unless-stopped
+    environment: 
+      - "SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=$SONAR_ES_BOOTSTRAP_CHECKS_DISABLE"
+      - "SONAR_TELEMETRY_ENABLE=$SONAR_TELEMETRY_ENABLE"
+    volumes: 
+      - sonarqube:/opt/sonarqube
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarqube.rule=Host(`$SONARQUBE_DNS`)"
+      - "traefik.http.routers.sonarqube.entrypoints=web"
+      - "traefik.http.routers.sonarqube.service=sonarqube"
+      - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
+
+volumes:
+  jenkins_home:
+  sonarqube:
