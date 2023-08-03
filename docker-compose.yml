@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   traefik:
-    image: traefik:v2.9.6
+    image: traefik:v2.10.4
     ports:
       # Exposes port 80 for incomming web requests
       - 80:80
