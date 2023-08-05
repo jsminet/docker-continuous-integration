@@ -43,7 +43,7 @@ services:
       - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
   
   gitlab:
-    image: gitlab/gitlab-ee:latest
+    image: gitlab/gitlab-ce
     environment:
       - "GITLAB_OMNIBUS_CONFIG=$GITLAB_OMNIBUS_CONFIG"
     labels:
