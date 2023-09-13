@@ -42,24 +42,18 @@ services:
       - "traefik.http.routers.sonarqube.service=sonarqube"
       - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
   
-  gitlab:
-    image: gitlab/gitlab-ce
-    environment:
-      - "GITLAB_OMNIBUS_CONFIG=$GITLAB_OMNIBUS_CONFIG"
+  gogs:
+    image: gogs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitlab.rule=Host(`$GITLAB_DNS`)"
-      - "traefik.http.routers.gitlab.entrypoints=web"
-      - "traefik.http.routers.gitlab.service=gitlab"
-      - "traefik.http.services.gitlab.loadbalancer.server.port=80"
+      - "traefik.http.routers.gogs.rule=Host(`$GOGS_DNS`)"
+      - "traefik.http.routers.gogs.entrypoints=web"
+      - "traefik.http.routers.gogs.service=gogs"
+      - "traefik.http.services.gogs.loadbalancer.server.port=3000"
     volumes:
-      - gitlab_config:/etc/gitlab
-      - gitlab_logs:/var/log/gitlab
-      - gitlab_data:/var/opt/gitlab
+      - gogs_data:/data
 
 volumes:
   jenkins_home:
   sonarqube:
-  gitlab_config:
-  gitlab_logs:
-  gitlab_data:
+  gogs_data:
