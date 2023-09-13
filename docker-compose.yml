@@ -43,7 +43,7 @@ services:
       - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
   
   gogs:
-    image: gogs
+    image: gogs/gogs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gogs.rule=Host(`$GOGS_DNS`)"
