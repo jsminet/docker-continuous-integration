@@ -58,21 +58,16 @@ services:
     volumes:
       - gogs_data:/data
 
-  mysql:
-    image: mariadb:10.11.5
-    environment: 
-      - "MARIADB_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD"
-    labels:
-        - "traefik.enable=true"
-        - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
-        - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.mysql.entrypoints=mysql"
+  postgres:
+    image: postgres:15.4
+    environment:
+      - "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
     volumes:
-      - mysql_data:/var/lib/mysql
-      - "./app/mysql/initdb:/docker-entrypoint-initdb.d"
+      - ./app/postgres/initdb:/docker-entrypoint-initdb.d
+      - postgres:/var/lib/postgresql
 
 volumes:
   jenkins_home:
   sonarqube:
   gogs_data:
-  mysql_data:
+  postgres:
