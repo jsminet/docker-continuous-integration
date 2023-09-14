@@ -27,3 +27,5 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+  mysql:
+    address: ":3306"

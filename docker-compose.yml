@@ -33,6 +33,9 @@ services:
     environment: 
       - "SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=$SONAR_ES_BOOTSTRAP_CHECKS_DISABLE"
       - "SONAR_TELEMETRY_ENABLE=$SONAR_TELEMETRY_ENABLE"
+      - "SONAR_JDBC_URL=$SONAR_JDBC_URL"
+      - "SONAR_JDBC_USERNAME=$SONAR_JDBC_USERNAME"
+      - "SONAR_JDBC_PASSWORD=$SONAR_JDBC_PASSWORD"
     volumes: 
       - sonarqube:/opt/sonarqube
     labels:
@@ -44,6 +47,8 @@ services:
   
   gogs:
     image: gogs/gogs
+    environment:
+        - RUN_CROND=$RUN_CROND
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gogs.rule=Host(`$GOGS_DNS`)"
@@ -53,7 +58,21 @@ services:
     volumes:
       - gogs_data:/data
 
+  mysql:
+    image: mariadb:10.11.5
+    environment: 
+      - "MARIADB_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD"
+    labels:
+        - "traefik.enable=true"
+        - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
+        - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.mysql.entrypoints=mysql"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - "./app/mysql/initdb:/docker-entrypoint-initdb.d"
+
 volumes:
   jenkins_home:
   sonarqube:
   gogs_data:
+  mysql_data:
